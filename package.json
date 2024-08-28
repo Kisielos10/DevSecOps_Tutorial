@@ -5,7 +5,8 @@
     "main": "app.js",
     "scripts": {
       "start": "node app.js",
-      "build": "echo 'Build step placeholder'"
+      "build": "echo 'Build step placeholder'",
+      "test": "jest"
     },
     "dependencies": {
       "express": "^4.17.1",
@@ -15,5 +16,9 @@
     },
     "engines": {
       "node": ">=18.0.0"
+    },
+    "devDependencies": {
+      "jest": "^29.7.0",
+      "supertest": "^7.0.0"
     }
   }
