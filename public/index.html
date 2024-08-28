@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevSecOps Demo App</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1, h2 { color: #333; }
+        form { margin-bottom: 20px; }
+        input, textarea { margin-bottom: 10px; }
+        #fileList, #commentList { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>DevSecOps Demo App</h1>
+    
+    <h2>File Upload</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="fileList"></div>
+    
+    <h2>Comments</h2>
+    <form id="commentForm">
+        <input type="text" id="name" placeholder="Your Name" required><br>
+        <textarea id="comment" placeholder="Your Comment" required></textarea><br>
+        <button type="submit">Submit Comment</button>
+    </form>
+    <div id="commentList"></div>
+
+    <script>
+        // File Upload
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            await fetch('/upload', { method: 'POST', body: formData });
+            loadFiles();
+        });
+
+        // Load Files
+        async function loadFiles() {
+            const response = await fetch('/files');
+            const files = await response.json();
+            document.getElementById('fileList').innerHTML = files.map(file => `<p>${file}</p>`).join('');
+        }
+
+        // Add Comment
+        document.getElementById('commentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const comment = document.getElementById('comment').value;
+            await fetch('/comment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, comment })
+            });
+            loadComments();
+        });
+
+        // Load Comments
+        async function loadComments() {
+            const response = await fetch('/comments');
+            const comments = await response.json();
+            document.getElementById('commentList').innerHTML = comments.map(c => `<p><strong>${c.name}:</strong> ${c.comment}</p>`).join('');
+        }
+
+        // Initial load
+        loadFiles();
+        loadComments();
+    </script>
+</body>
+</html>
