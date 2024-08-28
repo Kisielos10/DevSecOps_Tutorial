@@ -4,15 +4,20 @@
     "description": "A simple Node.js web app for Azure deployment with intentional vulnerabilities",
     "main": "app.js",
     "scripts": {
-      "start": "node app.js",
-      "build": "echo 'Build step placeholder'"
+        "start": "node app.js",
+        "lint": "eslint ."
     },
     "dependencies": {
-      "express": "^4.17.1",
-      "multer": "^1.4.2",
-      "sqlite3": "^5.0.2"
+        "express": "^4.17.1",
+        "multer": "^1.4.2",
+        "sqlite3": "^5.0.2"
     },
     "engines": {
-      "node": ">=14.0.0"
+        "node": ">=14.0.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.9.1",
+        "eslint": "^9.9.1",
+        "globals": "^15.9.0"
     }
-  }
+}
