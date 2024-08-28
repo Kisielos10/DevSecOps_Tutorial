@@ -1,8 +1,13 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import sqlite3 from 'sqlite3';
+import serialize from 'node-serialize';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -64,6 +69,37 @@ app.post('/login', (req, res) => {
     }
   });
 });
+
+app.get('/admin', (req, res) => {
+  // This should check for admin credentials, but it doesn't
+  res.send(`
+    <h1>Admin Panel</h1>
+    <p>Sensitive information: All user passwords are "password123"</p>
+  `);
+});
+
+app.post('/profile', (req, res) => {
+  const userProfile = req.body.profile;
+  // Insecure deserialization
+  const deserializedProfile = serialize.unserialize(userProfile);
+  res.json(deserializedProfile);
+});
+
+app.get('/debug', (req, res) => {
+    res.json({
+      app_version: "1.0.0",
+      environment: process.env.NODE_ENV || 'development',
+      database: {
+        type: "SQLite",
+        name: "in-memory"
+      },
+      server: {
+        platform: process.platform,
+        architecture: process.arch,
+        node_version: process.version
+      }
+    });
+  });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

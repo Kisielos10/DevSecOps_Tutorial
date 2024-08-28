@@ -38,6 +38,19 @@
     </form>
     <div id="commentList"></div>
 
+    <h2>Vulnerable Features</h2>
+    <ul>
+        <li><a href="/admin" target="_blank">Admin Panel (Broken Access Control)</a></li>
+        <li><a href="/debug" target="_blank">Debug Info (Security Misconfiguration)</a></li>
+    </ul>
+
+    <h2>Insecure Deserialization Demo</h2>
+    <form id="profileForm">
+        <textarea id="profile" placeholder="Enter serialized profile" required></textarea><br>
+        <button type="submit">Submit Profile</button>
+    </form>
+    <div id="profileResult"></div>
+
     <script>
         // Login
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -87,6 +100,19 @@
             const comments = await response.json();
             document.getElementById('commentList').innerHTML = comments.map(c => `<p><strong>${c.name}:</strong> ${c.comment}</p>`).join('');
         }
+
+        // Insecure Deserialization Demo
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const profile = document.getElementById('profile').value;
+            const response = await fetch('/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profile })
+            });
+            const result = await response.json();
+            document.getElementById('profileResult').textContent = JSON.stringify(result);
+        });
 
         // Initial load
         loadFiles();
