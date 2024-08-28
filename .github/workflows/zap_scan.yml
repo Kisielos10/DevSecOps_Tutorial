@@ -1,0 +1,37 @@
+name: ZAP Scan
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: Scan the web application
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.10.0
+        with:
+          target: 'https://simple-devsecops-app.azurewebsites.net/'
+          cmd_options: '-I'  # Use the '-I' flag to ignore the failure and continue
+          allow_issue_writing: false  # Disable automatic issue creation
+
+      - name: Upload ZAP Scan Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: ZAP-Scan-Results
+          path: |
+            report_json.json
+            report_md.md
+            report_html.html
+
+      - name: Check for high alerts
+        run: |
+          if grep -q '"High": [^0]' report_json.json; then
+            echo "High severity alerts found in the ZAP scan!"
+            exit 1
+          fi
