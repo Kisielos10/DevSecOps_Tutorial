@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Jest tests
 
 on:
   push:
