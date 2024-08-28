@@ -1,20 +1,25 @@
-const globals = require('globals');
+import globals from 'globals';
 
-module.exports = [
-  {
-    files: ['**/*.js'],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'commonjs',
-      globals: {
-        ...globals.node,
-        ...globals.browser
-      }
+export default [
+    {
+        ignores: ['node_modules/**', 'dist/**'],
     },
-    rules: {
-      "space-infix-ops": ["error", { "int32Hint": false }],
-      "no-undef": "error",
-      "no-unused-vars": "warn"
-    }
-  }
+    {
+        languageOptions: {
+            ecmaVersion: 'latest',
+            sourceType: 'module',
+            globals: {
+                ...globals.node,
+                ...globals.es2021
+            },
+        },
+        rules: {
+            'indent': ['error', 4],
+            'linebreak-style': ['error', 'unix'],
+            'quotes': ['error', 'single'],
+            'semi': ['error', 'always'],
+            'no-unused-vars': 'warn',
+            'no-console': 'warn'
+        },
+    },
 ];
