@@ -20,15 +20,6 @@ jobs:
           cmd_options: '-I'  # Use the '-I' flag to ignore the failure and continue
           allow_issue_writing: false  # Disable automatic issue creation
 
-      - name: Upload ZAP Scan Results
-        uses: actions/upload-artifact@v2
-        with:
-          name: ZAP-Scan-Results
-          path: |
-            report_json.json
-            report_md.md
-            report_html.html
-
       - name: Check for high alerts
         run: |
           if grep -q '"High": [^0]' report_json.json; then
