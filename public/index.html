@@ -15,6 +15,14 @@
 <body>
     <h1>DevSecOps Demo App</h1>
     
+    <h2>Login</h2>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
+    </form>
+    <div id="loginResult"></div>
+
     <h2>File Upload</h2>
     <form id="uploadForm" enctype="multipart/form-data">
         <input type="file" name="file" required>
@@ -31,6 +39,20 @@
     <div id="commentList"></div>
 
     <script>
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const result = await response.json();
+            document.getElementById('loginResult').textContent = result.message;
+        });
+
         // File Upload
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
