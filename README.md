@@ -69,13 +69,17 @@ You can experiment with the demo instance at https://simple-devsecops-app.azurew
 2. Change the URL to your own application's URL
 3. Results will appear as an artifact on GitHub
 
+### Secret discovery with Trufflehog
+
+1. Utilise the provided `Trufflehog.yml` file from this repository
+
 ### Linting
 
 TODO
 
 ### Tests
 
-TODO
+Not really a part of the security validaiton process but see files `app.test.js` as well as `test.yml`
 
 ### CodeQL
 
@@ -114,8 +118,6 @@ TODO
    }
    }
    ```
-
-
 
 ## Further Learning
 
